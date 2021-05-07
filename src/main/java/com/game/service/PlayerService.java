@@ -6,6 +6,7 @@ import com.game.controller.PlayerOrder;
 import com.game.entity.Player;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PlayerService {
 
@@ -18,7 +19,7 @@ public interface PlayerService {
 
     Player getPlayer(Long id);
 
-    Player update(Long id, Player player);
+    Optional<Player> update(Long id, Player player);
 
     void delete(Long id);
 

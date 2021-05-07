@@ -64,6 +64,36 @@ public class Player {
         setBanned(banned);
     }
 
+    public void copyNonNullFields(Player source) {
+        if (source.getName() != null) {
+            this.setName(source.getName());
+        }
+        if (source.getTitle() != null) {
+            this.setTitle(source.getTitle());
+        }
+        if (source.getExperience() != null) {
+            this.setExperience(source.getExperience());
+        }
+        if (source.getBanned() != null) {
+            this.setBanned(source.getBanned());
+        }
+        if (source.getBirthday() != null) {
+            this.setBirthday(source.getBirthday());
+        }
+        if (source.getProfession() != null) {
+            this.setProfession(source.getProfession());
+        }
+        if (source.getRace() != null) {
+            this.setRace(source.getRace());
+        }
+        if (source.getLevel() != null) {
+            this.setLevel(source.getLevel());
+        }
+        if (source.getUntilNextLevel() != null) {
+            this.setUntilNextLevel(source.getUntilNextLevel());
+        }
+    }
+
     public Long getId() {
         return id;
     }

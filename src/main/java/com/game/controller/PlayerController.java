@@ -20,20 +20,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/players")
 public final class PlayerController {
 
-    private final PlayerService playerServiceImpl;
+    private final PlayerService playerService;
     private final PlayerCreateDTOValidator playerCreateDTOValidator;
     private final PlayerUpdateDTOValidator playerUpdateDTOValidator;
 
     @Autowired
-    public PlayerController(PlayerService playerServiceImpl,
+    public PlayerController(PlayerService playerService,
                             PlayerCreateDTOValidator playerCreateDTOValidator,
                             PlayerUpdateDTOValidator playerUpdateDTOValidator) {
-        this.playerServiceImpl = playerServiceImpl;
+        this.playerService = playerService;
         this.playerCreateDTOValidator = playerCreateDTOValidator;
         this.playerUpdateDTOValidator = playerUpdateDTOValidator;
     }
@@ -67,7 +68,7 @@ public final class PlayerController {
         PlayerConstraint playerConstraint = new PlayerConstraint(name, title, race,
                 profession, fromMillis(after), fromMillis(before), banned, minExperience, maxExperience, minLevel, maxLevel);
         PageConstraint pageConstraint = new PageConstraint(pageNumber, pageSize);
-        List<Player> players = playerServiceImpl.getPlayerList(playerConstraint, order, pageConstraint);
+        List<Player> players = playerService.getPlayerList(playerConstraint, order, pageConstraint);
         return new ResponseEntity<>(players, HttpStatus.OK);
     }
 
@@ -86,7 +87,7 @@ public final class PlayerController {
             @RequestParam(required = false) Integer maxLevel) {
         PlayerConstraint playerConstraint = new PlayerConstraint(name, title, race,
                 profession, fromMillis(after), fromMillis(before), banned, minExperience, maxExperience, minLevel, maxLevel);
-        long count = playerServiceImpl.getPlayersCount(playerConstraint);
+        long count = playerService.getPlayersCount(playerConstraint);
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
 
@@ -97,7 +98,7 @@ public final class PlayerController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Player out = playerServiceImpl.create(playerCreateDTO.toPlayer());
+        Player out = playerService.create(playerCreateDTO.toPlayer());
         return new ResponseEntity<>(out, HttpStatus.OK);
     }
 
@@ -107,7 +108,7 @@ public final class PlayerController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Long playerId = Long.parseLong(id);
-        Player player = playerServiceImpl.getPlayer(playerId);
+        Player player = playerService.getPlayer(playerId);
         if (player == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -123,12 +124,9 @@ public final class PlayerController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Long playerId = Long.parseLong(id);
-        if (!playerServiceImpl.exists(playerId)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        playerServiceImpl.update(playerId, playerUpdateDTO.toPlayer());
-        Player player = playerServiceImpl.getPlayer(playerId);
-        return new ResponseEntity<>(player, HttpStatus.OK);
+        Optional<Player> updateResult = playerService.update(playerId, playerUpdateDTO.toPlayer());
+        return updateResult.map(player -> new ResponseEntity<>(player, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
@@ -137,10 +135,10 @@ public final class PlayerController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Long playerId = Long.parseLong(id);
-        if (!playerServiceImpl.exists(playerId)) {
+        if (!playerService.exists(playerId)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        playerServiceImpl.delete(playerId);
+        playerService.delete(playerId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
