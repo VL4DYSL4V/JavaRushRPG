@@ -11,7 +11,7 @@ public final class LongToDateConverter implements Converter<Long, Date> {
     @Override
     public Date convert(Long source) {
         Instant instant = Instant.ofEpochMilli(source);
-        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"));
+        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
         return Date.from(zonedDateTime.toInstant());
     }
 }
