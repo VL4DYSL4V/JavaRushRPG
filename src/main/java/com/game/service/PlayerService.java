@@ -18,7 +18,7 @@ public interface PlayerService {
 
     Player getPlayer(Long id);
 
-    void update(Long id, Player player);
+    Player update(Long id, Player player);
 
     void delete(Long id);
 

@@ -63,7 +63,7 @@ public final class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void update(Long id, Player player) {
+    public Player update(Long id, Player player) {
         if(player.getExperience() != null){
             player = new Player(player);
             int exp = player.getExperience();
@@ -72,7 +72,41 @@ public final class PlayerServiceImpl implements PlayerService {
             int untilNextLevel = calculateUntilNextLevel(level, exp);
             player.setUntilNextLevel(untilNextLevel);
         }
-        playerRepository.update(id, player);
+//        playerRepository.update(id, player);
+        Player existing = playerRepository.findById(id).get();
+        copyNonNullFields(existing, player);
+        playerRepository.save(existing);
+        return existing;
+    }
+
+    private void copyNonNullFields(Player target, Player source){
+        if(source.getName() != null){
+            target.setName(source.getName());
+        }
+        if(source.getTitle() != null){
+            target.setTitle(source.getTitle());
+        }
+        if(source.getExperience() != null){
+            target.setExperience(source.getExperience());
+        }
+        if(source.getBanned() != null){
+            target.setBanned(source.getBanned());
+        }
+        if(source.getBirthday() != null){
+            target.setBirthday(source.getBirthday());
+        }
+        if(source.getProfession() != null){
+            target.setProfession(source.getProfession());
+        }
+        if(source.getRace() != null){
+            target.setRace(source.getRace());
+        }
+        if(source.getLevel() != null){
+            target.setLevel(source.getLevel());
+        }
+        if(source.getUntilNextLevel() != null){
+            target.setUntilNextLevel(source.getUntilNextLevel());
+        }
     }
 
     @Override
